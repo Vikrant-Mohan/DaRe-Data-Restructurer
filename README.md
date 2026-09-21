@@ -118,6 +118,47 @@ Pages below `EXTRACT_PDF_TEXT_DENSITY` chars/in² are rendered to PNG and sent
 as images to `EXTRACT_VISION_MODEL` (multimodal messages). Text-layer pages
 stay cheap and fully deterministic.
 
+## Deploying to Vercel
+
+The FastAPI service deploys as a single Vercel Function (Python runtime).
+Configuration already committed:
+
+- `main.py` — root entrypoint shim; exports `app` at a recognized location and
+  makes the src-layout package importable.
+- `pyproject.toml` — `[tool.vercel] entrypoint = "main:app"` (disambiguates the
+  other `app` variables in this repo: CLI, tests) + runtime env defaults.
+- `.python-version` — pins the Vercel runtime to Python 3.12.
+- `vercel.json` — keeps tests/caches out of the function bundle.
+
+Two serverless constraints are handled for you:
+
+1. **Read-only filesystem** — cache/audit/user-schema dirs automatically fall
+   back to `/tmp` when the working directory is not writable.
+2. **No Chromium** — serverless functions cannot run Playwright's browser, so
+   URL extraction transparently falls back to a static HTTP fetch (same
+   pruning + extraction pipeline, no JS rendering). Force it everywhere with
+   `EXTRACT_DISABLE_BROWSER=1`.
+
+Deploy:
+
+```bash
+npm i -g vercel
+vercel link
+vercel env add EXTRACT_MODEL          # e.g. litellm/gpt-4o-mini
+vercel env add OPENAI_API_KEY         # provider key(s) your model string needs
+vercel --prod
+```
+
+Or push to GitHub and import the repo at vercel.com/new — detection is zero-config.
+
+Smoke test after deploying:
+
+```bash
+curl -s https://<your-app>.vercel.app/health
+curl -s https://<your-app>.vercel.app/extract -H 'content-type: application/json' \
+  -d '{"url": "https://example.com", "schema_name": "product"}'
+```
+
 ## Testing
 
 ```bash

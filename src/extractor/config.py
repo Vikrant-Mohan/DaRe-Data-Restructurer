@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import tempfile
 from pathlib import Path
 from typing import Literal
 
@@ -9,6 +10,24 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _runtime_base() -> Path:
+    """Base dir for runtime artifacts (cache, audit, user schemas).
+
+    Deployment filesystems like Vercel Functions are read-only except for
+    ``/tmp``; probe writability once and fall back so cache/audit writes
+    never crash the app in production.
+    """
+    cwd = Path.cwd()
+    try:
+        with tempfile.TemporaryFile(dir=cwd):
+            return cwd
+    except OSError:
+        return Path(tempfile.gettempdir())
+
+
+_RUNTIME_BASE = _runtime_base()
 
 
 class Settings(BaseSettings):
@@ -50,12 +69,12 @@ class Settings(BaseSettings):
     pdf_dpi: int = 170
 
     # ── Cache ───────────────────────────────────────────────────────────────
-    cache_dir: Path = Path(".cache")
+    cache_dir: Path = Field(default_factory=lambda: _RUNTIME_BASE / ".cache")
     cache_ttl_hours: float = 24.0
 
     # ── Misc ────────────────────────────────────────────────────────────────
-    user_schema_dir: Path = Path("schemas_user")
-    audit_dir: Path = Path("audit")
+    user_schema_dir: Path = Field(default_factory=lambda: _RUNTIME_BASE / "schemas_user")
+    audit_dir: Path = Field(default_factory=lambda: _RUNTIME_BASE / "audit")
     log_level: str = "INFO"
 
     @property

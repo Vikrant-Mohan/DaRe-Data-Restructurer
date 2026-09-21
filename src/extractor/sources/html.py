@@ -19,6 +19,21 @@ from extractor.sources.prune import prune_dom
 
 BLOCK_RESOURCE_TYPES = {"image", "media", "font"}
 
+# Errors that mean "no usable browser here" (serverless hosts, missing libs)
+#
+# (Set EXTRACT_DISABLE_BROWSER=1 to force static fetching everywhere.)
+_BROWSER_MISSING_MARKERS = (
+    "executable doesn't exist",
+    "playwright install",
+    "no such file or directory",
+    "browser type is not supported",
+    "missing dependencies",
+    "host system is missing",
+    "cannot find module",
+    "error while loading shared libraries",
+    "failed to launch",
+)
+
 
 class HtmlSource:
     """Fetch a URL with Playwright (Chromium) and normalize it."""
@@ -31,6 +46,19 @@ class HtmlSource:
             raise SourceError(f"unsupported URL scheme: {url!r}")
 
     async def fetch(self) -> SourceDocument:
+        """Fetch with Playwright; on a browser-less host fall back to static HTTP."""
+        try:
+            return await self._fetch_browser()
+        except ImportError:
+            raise
+        except Exception as exc:
+            if not _is_browser_missing(exc):
+                raise
+            from extractor.sources.static_http import fetch_static
+
+            return await fetch_static(self.settings, self.url)
+
+    async def _fetch_browser(self) -> SourceDocument:
         try:
             from playwright.async_api import async_playwright
         except ImportError as exc:  # pragma: no cover
@@ -125,3 +153,13 @@ class HtmlSource:
         if m:
             return urljoin(self.url, m.group(1))
         return self.url
+
+
+def _is_browser_missing(exc: BaseException) -> bool:
+    """True when the failure means 'no usable browser on this host'."""
+    import os
+
+    if os.environ.get("EXTRACT_DISABLE_BROWSER", "").strip().lower() in {"1", "true", "yes"}:
+        return True
+    text = f"{type(exc).__name__}: {exc}".lower()
+    return any(marker in text for marker in _BROWSER_MISSING_MARKERS)
