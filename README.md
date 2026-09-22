@@ -12,15 +12,19 @@ Playwright / PyMuPDF ──▶ pruned DOM / page text (+images) ──▶ LLM (L
                                    └──── previous output ◀── Pydantic validation
 ```
 
-## Windows app — download the exe directly
+## Windows app — download and install directly
 
 No Python required: grab the prebuilt Windows app from the
 [**Releases**](https://github.com/Vikrant-Mohan/data-restructuring-project/releases/latest)
-page — download `ExtractorConsole-v*-win64.zip`, unzip it anywhere, and run
-`ExtractorConsole.exe`. It starts a local server and opens the console in your
-browser (extraction + Excel restructuring, same features as the web UI).
+page. Two options:
 
-- Keep `ExtractorConsole.exe` and the `_internal` folder together.
+- **Installer (recommended)** — download `ExtractorConsole-Setup-*.exe` and run
+  it. Installs to Program Files with a Start Menu shortcut and a proper
+  uninstaller (Apps & features → "Extractor Console").
+- **Portable zip** — download `ExtractorConsole-v*-win64.zip`, unzip it
+  anywhere, and run `ExtractorConsole.exe`. Keep the exe and the `_internal`
+  folder together.
+
 - Set `EXTRACT_MODEL` and your provider API key via environment variables, or a
   `.env` file placed next to the exe (see `.env.example`).
 - Closing the console window shuts the app down.

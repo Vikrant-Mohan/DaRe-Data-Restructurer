@@ -12,8 +12,14 @@ ROOT = Path(SPECPATH)
 UI = ROOT / "ui"
 
 # litellm reads model-cost JSON files from its package dir at import time;
-# without these the frozen app crashes on startup.
-DATA_FILES = collect_data_files("litellm")
+# without these the frozen app crashes on startup. The proxy-server data files
+# (guardrail benchmarks, example configs) are never used by this client app and
+# their deep paths break Inno Setup's MAX_PATH limit, so drop them.
+DATA_FILES = [
+    (src, dest)
+    for src, dest in collect_data_files("litellm")
+    if "proxy" not in Path(src).parts
+]
 
 hiddenimports = [
     "uvicorn.logging",
