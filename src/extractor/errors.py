@@ -40,3 +40,7 @@ class SourceError(ExtractorError):
 
 class BackendError(ExtractorError):
     """The LLM backend itself failed (network, provider error) after retries."""
+
+
+class RestructureError(ExtractorError):
+    """A table-restructuring plan referenced unknown columns or invalid ops."""

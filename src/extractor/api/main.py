@@ -173,3 +173,13 @@ async def extract_upload(
         provenance=ProvenanceOut(**result.provenance.model_dump(mode="json")),
         audit=result.run_trace.model_dump(mode="json") if include_audit else None,
     )
+
+
+# Web UI + restructure routers. They import nothing from this module at import
+# time (pool is imported lazily inside handlers), so there is no circularity.
+# The SPA catch-all in web.py must be included LAST so API routes win.
+from extractor.api.restructure import router as _restructure_router  # noqa: E402
+from extractor.api.web import router as _web_router  # noqa: E402
+
+app.include_router(_restructure_router)
+app.include_router(_web_router)

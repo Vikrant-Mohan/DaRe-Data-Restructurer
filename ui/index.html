@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Restructuring Console</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Data Restructuring Console</h1>
+  <div id="health" class="health">loading…</div>
+</header>
+
+<nav>
+  <button id="tab-extract" class="tab active">Extract (HTML / PDF)</button>
+  <button id="tab-excel" class="tab">Excel Restructure</button>
+</nav>
+
+<main>
+  <!-- ── Extract panel ─────────────────────────────────────────────── -->
+  <section id="panel-extract" class="panel active">
+    <div class="row">
+      <label>Schema
+        <select id="schema"></select>
+      </label>
+      <label>Source
+        <select id="src-kind">
+          <option value="url">URL</option>
+          <option value="html">HTML text</option>
+          <option value="pdf">PDF upload</option>
+        </select>
+      </label>
+    </div>
+    <div class="row" id="src-url-row">
+      <input id="src-url" type="url" placeholder="https://example.com/product">
+    </div>
+    <div class="row" id="src-html-row" hidden>
+      <textarea id="src-html" rows="8" placeholder="&lt;html&gt;…paste HTML…&lt;/html&gt;"></textarea>
+    </div>
+    <div class="row" id="src-pdf-row" hidden>
+      <input id="src-pdf" type="file" accept=".pdf,application/pdf">
+    </div>
+    <div class="row">
+      <label class="check"><input id="include-audit" type="checkbox"> include audit trail</label>
+      <button id="btn-extract" class="primary">Extract</button>
+    </div>
+    <div id="extract-status" class="status"></div>
+    <pre id="extract-result" class="result" hidden></pre>
+  </section>
+
+  <!-- ── Excel panel ───────────────────────────────────────────────── -->
+  <section id="panel-excel" class="panel">
+    <div class="row">
+      <label>Workbook (.xlsx)
+        <input id="xl-file" type="file" accept=".xlsx,.xlsm">
+      </label>
+      <label>Sheet
+        <select id="xl-sheet"><option value="">(first)</option></select>
+      </label>
+    </div>
+    <div class="row">
+      <label class="grow">Target layout — describe the output you want
+        <textarea id="xl-target" rows="3" placeholder="e.g. One row per order: ISO dates, uppercase country codes, numeric totals, dedupe by order id, sorted by date"></textarea>
+      </label>
+    </div>
+    <div class="row">
+      <label>Model override <input id="xl-model" type="text" placeholder="(settings default)"></label>
+      <button id="btn-plan" class="primary">Generate plan</button>
+      <button id="btn-apply" disabled>Apply plan</button>
+      <button id="btn-download" disabled>Download .xlsx</button>
+    </div>
+    <div id="xl-status" class="status"></div>
+
+    <div id="xl-plan-wrap" hidden>
+      <h3>Plan <span class="muted">(editable JSON)</span></h3>
+      <textarea id="xl-plan" rows="10" class="mono"></textarea>
+      <div id="xl-steps" class="steps"></div>
+    </div>
+
+    <div id="xl-preview-wrap" hidden>
+      <h3>Preview <span class="muted" id="xl-stats"></span></h3>
+      <div class="table-wrap"><table id="xl-preview"></table></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Deterministic extraction + restructuring agent · UI served by FastAPI</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

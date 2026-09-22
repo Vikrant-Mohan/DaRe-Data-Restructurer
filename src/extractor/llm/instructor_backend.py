@@ -90,6 +90,10 @@ class InstructorBackend:
         }
         if seed is not None:
             kwargs["seed"] = seed
+        if normalize_model_string(model).startswith("litellm/"):
+            # instructor v2's litellm provider ignores the model at build time;
+            # it must be passed on every call (litellm expects the bare id).
+            kwargs["model"] = normalize_model_string(model)[len("litellm/") :]
 
         try:
             result, completion = await client.chat.completions.create_with_completion(
