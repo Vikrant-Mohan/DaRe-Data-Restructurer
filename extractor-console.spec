@@ -5,9 +5,15 @@
 import sys
 from pathlib import Path
 
+from PyInstaller.utils.hooks import collect_data_files
+
 block_cipher = None
 ROOT = Path(SPECPATH)
 UI = ROOT / "ui"
+
+# litellm reads model-cost JSON files from its package dir at import time;
+# without these the frozen app crashes on startup.
+DATA_FILES = collect_data_files("litellm")
 
 hiddenimports = [
     "uvicorn.logging",
@@ -38,7 +44,7 @@ a = Analysis(
     ["desktop.py"],
     pathex=[str(ROOT / "src")],
     binaries=[],
-    datas=[(str(UI), "ui")] if UI.is_dir() else [],
+    datas=DATA_FILES + ([(str(UI), "ui")] if UI.is_dir() else []),
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},

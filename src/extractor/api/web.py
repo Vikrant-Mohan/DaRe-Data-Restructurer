@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -10,7 +11,18 @@ from fastapi.responses import FileResponse
 
 router = APIRouter()
 
-_UI_DIST = Path(__file__).resolve().parents[3] / "ui"
+
+def _ui_dir() -> Path:
+    """Locate the ui/ assets in dev and in the PyInstaller onedir bundle."""
+    if getattr(sys, "frozen", False):
+        base = Path(sys.executable).resolve().parent
+        for candidate in (base / "_internal" / "ui", base / "ui"):
+            if candidate.is_dir():
+                return candidate
+    return Path(__file__).resolve().parents[3] / "ui"
+
+
+_UI_DIST = _ui_dir()
 
 
 def _type_name(prop: dict[str, Any]) -> str:

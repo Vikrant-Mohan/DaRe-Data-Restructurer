@@ -12,6 +12,7 @@ next to the exe or system-wide — same configuration as the server deployment.
 
 from __future__ import annotations
 
+import os
 import socket
 import sys
 import threading
@@ -38,7 +39,9 @@ def _free_port() -> int:
 def main() -> int:
     _bootstrap_path()
 
-    port = _free_port()
+    # EXTRACT_PORT pins the port (useful for CI); EXTRACT_DESKTOP_NO_BROWSER=1
+    # skips auto-opening the browser.
+    port = int(os.environ.get("EXTRACT_PORT") or 0) or _free_port()
     url = f"http://127.0.0.1:{port}/"
 
     import uvicorn
@@ -58,7 +61,13 @@ def main() -> int:
         print("server failed to start", file=sys.stderr)
         return 1
 
-    webbrowser.open(url)
+    no_browser = os.environ.get("EXTRACT_DESKTOP_NO_BROWSER", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    if not no_browser:
+        webbrowser.open(url)
     print(f"Extractor Console running at {url}  (close this window to quit)")
 
     try:
