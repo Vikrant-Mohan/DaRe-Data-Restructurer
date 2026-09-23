@@ -11,6 +11,11 @@
 
 * { box-sizing: border-box; }
 
+/* Guard: .row { display: flex } would otherwise defeat the `hidden`
+   attribute (author CSS beats the UA's [hidden] { display: none }), leaving
+   the URL / HTML / PDF source rows all visible at once. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   font-family: "Segoe UI", system-ui, sans-serif;
