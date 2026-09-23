@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "extractor"
 version = "0.1.0"
-description = "Deterministic structured-data extraction agent: HTML (Playwright) and PDF sources to strict Pydantic schemas, with schema-validation feedback loops."
+description = "DaRe — Data Restructurer: deterministic structured-data extraction agent (HTML via Playwright, PDFs, Excel restructuring) with strict Pydantic schemas and schema-validation feedback loops."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

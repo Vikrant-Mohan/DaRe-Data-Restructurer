@@ -1,6 +1,6 @@
-# PyInstaller spec for the Extractor Console desktop app (Windows).
-# Build:  .venv/Scripts/pyinstaller extractor-console.spec --noconfirm
-# Output: dist/extractor-console/ExtractorConsole.exe  (onedir: fast startup)
+# PyInstaller spec for the DaRe desktop app (Windows).
+# Build:  .venv/Scripts/pyinstaller dare.spec --noconfirm
+# Output: dist/dare/DaRe.exe  (onedir: fast startup)
 
 import sys
 from pathlib import Path
@@ -66,7 +66,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="ExtractorConsole",
+    name="DaRe",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -82,5 +82,5 @@ coll = COLLECT(
     a.datas,
     strip=False,
     upx=False,
-    name="extractor-console",
+    name="dare",
 )

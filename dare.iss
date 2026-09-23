@@ -1,15 +1,15 @@
-; Inno Setup script for the Extractor Console desktop app (Windows).
+; Inno Setup script for the DaRe desktop app (Windows).
 ;
-; Build (after `pyinstaller extractor-console.spec --noconfirm`):
-;   "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" extractor-console.iss
-; Output: dist/installer/ExtractorConsole-Setup-0.1.0.exe
+; Build (after `pyinstaller dare.spec --noconfirm`):
+;   "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" dare.iss
+; Output: dist/installer/DaRe-Setup-0.1.0.exe
 
-#define AppName "Extractor Console"
-#define AppExe "ExtractorConsole.exe"
+#define AppName "DaRe - Data Restructurer"
+#define AppExe "DaRe.exe"
 #define AppVersion "0.1.0"
 #define AppPublisher "Vikrant Mohan"
-#define AppExeName "Extractor Console"
-#define BundleDir "dist\extractor-console"
+#define AppExeName "DaRe"
+#define BundleDir "dist\dare"
 
 [Setup]
 AppId={{CD406DF1-3523-44A5-98CD-D030B7207220}
@@ -22,7 +22,7 @@ DisableProgramGroupPage=yes
 ; {autopf} needs admin rights; the uninstaller entry shows up in Apps settings
 PrivilegesRequired=admin
 OutputDir=dist\installer
-OutputBaseFilename=ExtractorConsole-Setup-{#AppVersion}
+OutputBaseFilename=DaRe-Setup-{#AppVersion}
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern

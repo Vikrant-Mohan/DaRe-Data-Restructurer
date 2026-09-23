@@ -1,4 +1,12 @@
-# extractor — deterministic structured-data extraction agent
+# DaRe — Data Restructurer
+
+**DaRe** restructures messy data into clean, strict schemas: it crawls
+**changing DOM structures** (Playwright) and **unstructured PDFs**
+(PyMuPDF + vision fallback) to extract entities into **strict Pydantic
+schemas** — with schema-validation failures fed back into the prompt context
+until the output conforms, or a fully audited failure is raised. It also
+restructures **Excel workbooks** with deterministic, LLM-planned
+transformations, and ships as a **Windows desktop app**.
 
 Crawl **changing DOM structures** (Playwright) and **unstructured PDFs**
 (PyMuPDF + vision fallback) and reliably extract entities into **strict
@@ -15,15 +23,14 @@ Playwright / PyMuPDF ──▶ pruned DOM / page text (+images) ──▶ LLM (L
 ## Windows app — download and install directly
 
 No Python required: grab the prebuilt Windows app from the
-[**Releases**](https://github.com/Vikrant-Mohan/data-restructuring-project/releases/latest)
+[**Releases**](https://github.com/Vikrant-Mohan/DaRe-Data-Restructurer/releases/latest)
 page. Two options:
 
-- **Installer (recommended)** — download `ExtractorConsole-Setup-*.exe` and run
-  it. Installs to Program Files with a Start Menu shortcut and a proper
-  uninstaller (Apps & features → "Extractor Console").
-- **Portable zip** — download `ExtractorConsole-v*-win64.zip`, unzip it
-  anywhere, and run `ExtractorConsole.exe`. Keep the exe and the `_internal`
-  folder together.
+- **Installer (recommended)** — download `DaRe-Setup-*.exe` and run it.
+  Installs to Program Files as **DaRe - Data Restructurer** with a Start Menu
+  shortcut and a proper uninstaller (Apps & features → "DaRe").
+- **Portable zip** — download `DaRe-v*-win64.zip`, unzip it anywhere, and run
+  `DaRe.exe`. Keep the exe and the `_internal` folder together.
 
 - Set `EXTRACT_MODEL` and your provider API key via environment variables, or a
   `.env` file placed next to the exe (see `.env.example`).

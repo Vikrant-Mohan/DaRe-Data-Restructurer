@@ -1,6 +1,6 @@
 """Desktop entry point: local server + browser window in one executable.
 
-PyInstaller bundles this into ``ExtractorConsole.exe``. On launch it:
+PyInstaller bundles this into ``DaRe.exe``. On launch it:
   1. picks a free localhost port,
   2. starts uvicorn (the FastAPI app incl. UI + restructure endpoints),
   3. opens the default browser at the app,
@@ -68,7 +68,7 @@ def main() -> int:
     }
     if not no_browser:
         webbrowser.open(url)
-    print(f"Extractor Console running at {url}  (close this window to quit)")
+    print(f"DaRe — Data Restructurer running at {url}  (close this window to quit)")
 
     try:
         while True:

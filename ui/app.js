@@ -1,4 +1,4 @@
-/* Data Restructuring Console — vanilla JS, no build step. */
+/* DaRe — Data Restructurer console UI. Vanilla JS, no build step. */
 "use strict";
 
 const $ = (id) => document.getElementById(id);
