@@ -16,7 +16,7 @@ from typing import Any
 from extractor.audit import AttemptRecord, RunTrace, new_run_id
 from extractor.cache import CacheKey, ResultCache, canonical_fingerprint
 from extractor.config import Settings
-from extractor.errors import ExtractionFailed, SchemaNotFound, SourceError
+from extractor.errors import ExtractionFailed, SourceError
 from extractor.llm.base import BackendCall
 from extractor.llm.instructor_backend import normalize_model_string
 from extractor.llm.prompts import build_feedback_message, build_messages, excerpt
@@ -373,7 +373,9 @@ class ExtractionAgent:
             self.registry.register(schema)
             return schema
         if not schema_name:
-            raise SchemaNotFound("no schema given: pass schema= or schema_name=")
+            # No schema requested: fall back to the schema-agnostic "general"
+            # auto-analyze schema so any document can be analyzed as-is.
+            return self.registry.get("general")
         return self.registry.get(schema_name)
 
     def _new_trace(

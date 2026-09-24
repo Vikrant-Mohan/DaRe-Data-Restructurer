@@ -88,7 +88,7 @@ class InstructorBackend:
             # so its internal re-prompts never bypass our audit trail.
             "max_retries": 1,
         }
-        if seed is not None:
+        if seed is not None and not _provider_rejects_seed(model):
             kwargs["seed"] = seed
         if normalize_model_string(model).startswith("litellm/"):
             # instructor v2's litellm provider ignores the model at build time;
@@ -128,6 +128,21 @@ class InstructorBackend:
             model_used="",
             backend_name=self.name,
         )
+
+
+def _provider_rejects_seed(model: str) -> bool:
+    """Providers litellm refuses to forward `seed` to (e.g. Gemini via litellm).
+
+    litellm raises UnsupportedParamsError for `seed` on Gemini models; dropping
+    it here beats failing the whole extraction. Determinism for those providers
+    is approximated via temperature=0 (the settings default) instead.
+    """
+    normalized = normalize_model_string(model)
+    if normalized.startswith("litellm/"):
+        bare = normalized[len("litellm/") :]
+        if bare.startswith("gemini/") or bare.startswith("vertex_ai/gemini"):
+            return True
+    return normalized.startswith("gemini/")
 
 
 def _completion_text(completion: Any) -> str | None:

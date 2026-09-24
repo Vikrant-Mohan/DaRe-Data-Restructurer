@@ -18,11 +18,14 @@ class _FakeAgent:
         from extractor.schemas.registry import SchemaRegistry
 
         self.registry = SchemaRegistry()
+        self.calls: list[dict[str, Any]] = []
 
     async def extract_url(self, url: str, **kw: Any) -> Any:
+        self.calls.append({"kind": "url", **kw})
         return await self._result()
 
     async def extract_html_text(self, html: str, **kw: Any) -> Any:
+        self.calls.append({"kind": "html", **kw})
         return await self._result()
 
     async def extract_pdf_bytes(self, data: bytes, **kw: Any) -> Any:
@@ -90,6 +93,14 @@ async def test_health_lists_schemas(client: Any, fake_pool: None) -> None:
     resp = await client.get("/health")
     assert resp.status_code == 200
     assert "product" in resp.json()["schemas"]
+    assert "general" in resp.json()["schemas"]  # built-in auto-analyze schema
+
+
+async def test_empty_schema_name_passes_through_to_agent(client: Any, fake_pool: None) -> None:
+    """No schema requested: the API forwards '' and the pipeline picks `general`."""
+    resp = await client.post("/extract", json={"html": "<p>x</p>"})
+    assert resp.status_code == 200
+    assert pool._agent.calls[0]["schema_name"] == ""  # type: ignore[union-attr]
 
 
 async def test_extract_from_html(client: Any, fake_pool: None) -> None:

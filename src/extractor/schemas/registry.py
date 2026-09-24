@@ -36,8 +36,9 @@ class SchemaRegistry:
 
     # ── registration ────────────────────────────────────────────────────────
     def register_builtin_examples(self) -> None:
-        from extractor.schemas import examples
+        from extractor.schemas import examples, general
 
+        self.register_module(general)
         self.register_module(examples)
 
     def register_module(self, module: object) -> list[str]:

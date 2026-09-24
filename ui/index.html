@@ -31,6 +31,7 @@
         </select>
       </label>
     </div>
+    <p class="muted" id="schema-hint">No schema needed: <strong>general</strong> auto-analyzes any document (resume, invoice, report…) and organizes the key points into titled sections — skills, experience, projects, totals, whatever fits.</p>
     <div class="row" id="src-url-row">
       <input id="src-url" type="url" placeholder="https://example.com/product">
     </div>
@@ -45,7 +46,7 @@
       <button id="btn-extract" class="primary">Extract</button>
     </div>
     <div id="extract-status" class="status"></div>
-    <pre id="extract-result" class="result" hidden></pre>
+    <div id="extract-result" class="result" hidden></div>
   </section>
 
   <!-- ── Excel panel ───────────────────────────────────────────────── -->

@@ -83,7 +83,13 @@ async function loadHealth() {
     state.schemas = body.schemas;
     const sel = $("schema");
     sel.innerHTML = "";
+    // "general" auto-analyzes any document; list it first as the default.
+    const general = document.createElement("option");
+    general.value = "general";
+    general.textContent = "general (auto-analyze)";
+    sel.appendChild(general);
     for (const s of body.schemas) {
+      if (s === "general") continue;
       const opt = document.createElement("option");
       opt.value = s;
       opt.textContent = s;
@@ -143,11 +149,11 @@ $("btn-extract").addEventListener("click", async () => {
     const prov = body.provenance || {};
     setStatus(
       status,
-      `ok · ${prov.attempt_count} attempt(s)${prov.cache_hit ? " · cache hit" : ""} · run ${prov.run_id}`,
+      `ok · ${prov.schema_name} · ${prov.attempt_count} attempt(s)${prov.cache_hit ? " · cache hit" : ""} · run ${prov.run_id}`,
       true
     );
     resultEl.hidden = false;
-    resultEl.textContent = JSON.stringify(body.data, null, 2);
+    renderExtractResult(resultEl, body.data);
   } catch (err) {
     setStatus(status, err.message, false);
     resultEl.hidden = true;
@@ -275,6 +281,54 @@ $("btn-download").addEventListener("click", async () => {
     setStatus(status, err.message, false);
   }
 });
+
+function renderExtractResult(el, data) {
+  el.innerHTML = "";
+  if (data && data.document_type && Array.isArray(data.sections)) {
+    // "general" auto-analysis: render organized sections, not raw JSON.
+    const head = document.createElement("div");
+    head.className = "doc-head";
+    head.textContent =
+      (data.title ? data.title + " — " : "") + "document type: " + data.document_type;
+    el.appendChild(head);
+    for (const sec of data.sections) {
+      const card = document.createElement("div");
+      card.className = "section-card";
+      const h = document.createElement("h4");
+      h.textContent = sec.title;
+      card.appendChild(h);
+      if (sec.summary) {
+        const p = document.createElement("p");
+        p.className = "muted";
+        p.textContent = sec.summary;
+        card.appendChild(p);
+      }
+      for (const b of sec.bullets || []) {
+        const li = document.createElement("div");
+        li.className = "bullet";
+        li.textContent = "• " + b;
+        card.appendChild(li);
+      }
+      for (const r of sec.rows || []) {
+        const row = document.createElement("div");
+        row.className = "kv";
+        const k = document.createElement("span");
+        k.className = "kv-label";
+        k.textContent = r.label + ": ";
+        const v = document.createElement("span");
+        v.textContent = r.value;
+        row.appendChild(k);
+        row.appendChild(v);
+        card.appendChild(row);
+      }
+      el.appendChild(card);
+    }
+    return;
+  }
+  const pre = document.createElement("pre");
+  pre.textContent = JSON.stringify(data, null, 2);
+  el.appendChild(pre);
+}
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));

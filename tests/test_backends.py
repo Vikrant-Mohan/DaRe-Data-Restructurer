@@ -13,6 +13,7 @@ from extractor.llm.instructor_backend import (
     InstructorBackend,
     _format_pydantic_errors,
     _map_exception,
+    _provider_rejects_seed,
     normalize_model_string,
 )
 from extractor.llm.registry import make_backend
@@ -29,6 +30,16 @@ def test_normalize_passthrough_provider_strings() -> None:
         "litellm/anthropic/claude-3-5-sonnet"
     )
     assert normalize_model_string("ollama/llama3.1") == "ollama/llama3.1"
+
+
+def test_gemini_models_dont_send_seed() -> None:
+    """litellm raises UnsupportedParamsError for `seed` on Gemini — drop it."""
+    assert _provider_rejects_seed("litellm/gemini/gemini-2.5-flash")
+    assert _provider_rejects_seed("gemini/gemini-2.0-flash")
+    assert _provider_rejects_seed("litellm/vertex_ai/gemini-2.5-pro")
+    assert not _provider_rejects_seed("litellm/gpt-4o-mini")
+    assert not _provider_rejects_seed("openai/gpt-4o")
+    assert not _provider_rejects_seed("gpt-4o-mini")
 
 
 def test_format_pydantic_errors_is_stable_and_annotated() -> None:
